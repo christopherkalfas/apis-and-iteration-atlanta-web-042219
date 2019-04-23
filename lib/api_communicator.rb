@@ -8,20 +8,23 @@ def get_character_movies_from_api(character_name)
   film_urls = nil
   film_array = []
   response_hash.each_with_index do |char, index|
-    if char["name"].downcase == character_name
+    if char["name"].downcase.include?(character_name)
       film_urls = response_hash[index]["films"]
     end
   end
-  film_urls.each do |url|
-    movie_response_string = RestClient.get(url)
-    movie_response_hash = JSON.parse(movie_response_string)
-    film_array << movie_response_hash
+  if film_urls
+    film_urls.each do |url|
+      movie_response_string = RestClient.get(url)
+      movie_response_hash = JSON.parse(movie_response_string)
+      film_array << movie_response_hash
+    end
   end
   film_array
 end
 
 def print_movies(films)
-  puts "Films homeboy/girl was in:\n"
+  puts "Films homeboy/girl was in: "
+  # binding.pry
   films.each do |film|
     puts "#{film["title"]}"
   end
@@ -29,7 +32,11 @@ end
 
 def show_character_movies(character)
   films = get_character_movies_from_api(character)
-  print_movies(films)
+  if films != []
+    print_movies(films)
+  else
+    puts 'no movies'
+  end
 end
 ## BONUS
 
